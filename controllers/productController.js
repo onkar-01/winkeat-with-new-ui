@@ -103,10 +103,13 @@ exports.getProductsByVendor = catchAsyncErrors(async (req, res, next) => {
 // update product
 
 exports.updateProduct = catchAsyncErrors(async (req, res, next) => {
+  console.log(req.body);
   let product = await Product.findById(req.params.id);
   if (!product) {
     return next(new ErrorHander("Product not Found", 404));
   }
+
+  req.body.images = product.images;
 
   product = await Product.findByIdAndUpdate(req.params.id, req.body, {
     new: true,

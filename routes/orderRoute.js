@@ -48,7 +48,7 @@ router
   .route("/orders/all")
   .get(
     isAuthenticatedUser,
-    isAuthenticatedRoles("vendor"),
+    // isAuthenticatedRoles("vendor"),
     getAllOrdersByVendor
   );
 router

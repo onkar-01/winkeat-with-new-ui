@@ -329,6 +329,7 @@ exports.deleteUserByAdmin = catchAsyncErrors(async (req, res, next) => {
 // Get ALL Vendor
 
 exports.getAllVendors = catchAsyncErrors(async (req, res, next) => {
+  // console.log(req.headers["authorization"]);
   const users = await User.find({ role: "vendor" });
 
   res.status(200).json({

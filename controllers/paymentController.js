@@ -88,8 +88,7 @@ exports.paymentverification = async (req, res) => {
       // Update the order's payment status
       const updatedOrder = await Order.findOneAndUpdate(
         {
-          user: req.user._id,
-          paymentStatus: "pending",
+          _id: req.query.orderId,
         },
         {
           paymentStatus: "paid",
@@ -123,6 +122,7 @@ exports.paymentverification = async (req, res) => {
     });
   }
 };
+
 exports.getApi = (req, res) => {
   res.status(200).json({
     key: process.env.RAZORPAY_KEY_ID,
