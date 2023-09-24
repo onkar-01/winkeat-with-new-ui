@@ -20,7 +20,7 @@ app.use(cookieParser());
 // );
 
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: "https://winkeat-with-new-ui-frontend.vercel.app/",
   credentials: true, // Allow credentials (cookies)
 };
 
