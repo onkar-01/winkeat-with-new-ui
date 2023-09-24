@@ -1,4 +1,5 @@
 const express = require("express");
+const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 // const fileUpload = require("express-fileupload");
 const Razorpay = require("razorpay");
@@ -13,17 +14,20 @@ const errorMiddleware = require("./middleware/error");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+dotenv.config({ path: "./config.env" });
 // app.use(
 //   fileUpload({
 //     useTempFiles: true,
 //   })
 // );
 
+console.log(process.env.DOMAIN);
+
 const corsOptions = {
-  origin: "https://unique-torte-c8fda0.netlify.app",
+  origin: `${process.env.DOMAIN}`,
   credentials: true, // Allow credentials (cookies)
 };
-
+console.log(corsOptions);
 app.use(cors(corsOptions));
 
 // Log the configuration
