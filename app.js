@@ -26,6 +26,7 @@ console.log(process.env.DOMAIN);
 const corsOptions = {
   origin: `${process.env.DOMAIN}`,
   credentials: true, // Allow credentials (cookies)
+  optionSuccessStatus:200,
 };
 console.log(corsOptions);
 app.use(cors(corsOptions));
