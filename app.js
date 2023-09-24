@@ -20,7 +20,7 @@ app.use(cookieParser());
 // );
 
 const corsOptions = {
-  origin: "https://winkeat-with-new-ui-frontend.vercel.app",
+  origin: "https://unique-torte-c8fda0.netlify.app",
   credentials: true, // Allow credentials (cookies)
 };
 
