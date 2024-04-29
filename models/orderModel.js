@@ -32,7 +32,10 @@ const orderSchema = new mongoose.Schema({
       },
     },
   ],
-
+  order_id:{
+    type: String,
+    required: true,
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -49,6 +52,11 @@ const orderSchema = new mongoose.Schema({
     default: "pending",
   },
   totalPrice: {
+    type: Number,
+    default: 0,
+    required: true,
+  },
+  tax: {
     type: Number,
     default: 0,
     required: true,

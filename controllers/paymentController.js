@@ -7,6 +7,10 @@ const Payment = require("../models/paymentModel");
 const Order = require("../models/orderModel");
 const shortid = require("shortid");
 const Razorpay = require("razorpay");
+const Earning = require("../models/earningModel");
+const Wallet = require("../models/walletModel");
+const moment = require('moment-timezone');
+const ShortUniqueId = require('short-unique-id');
 
 dotenv.config({ path: "./config.env" });
 
@@ -45,6 +49,7 @@ exports.checkout = catchAsyncErrors(async (req, res, next) => {
 
 exports.paymentverification = async (req, res) => {
   try {
+    const indianDate = moment().tz('Asia/Kolkata');
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
       req.body;
 
@@ -95,6 +100,45 @@ exports.paymentverification = async (req, res) => {
         }
       );
 
+      const order = await Order.findOne({ _id: req.query.orderId });
+
+      const earnings = await Earning.findOne({
+        user: order.vendor,
+        date: {
+          $gte: new Date(new Date().setHours(0, 0, 0)),
+          $lt: new Date(new Date().setHours(23, 59, 59)),
+        },
+      });
+  
+      if (earnings) {
+        earnings.totalEarnings += order.totalPrice - order.tax;
+        earnings.sales += 1;
+        await earnings.save();
+      } else {
+        await Earning.create({
+          user: order.vendor,
+          totalEarnings: order.totalPrice - order.tax,
+          sales: 1,
+          date: indianDate.toDate(),
+        });
+      }
+  
+      // Update the user's wallet balance
+      const wallet = await Wallet.findOne({ user: order.vendor, date: {
+        $gte: new Date(new Date().setHours(0, 0, 0)),
+        $lt: new Date(new Date().setHours(23, 59, 59)),
+      }});
+      if (wallet) {
+        wallet.balance += order.totalPrice - order.tax;
+        await wallet.save();
+      } else {
+        await Wallet.create({
+          user: order.vendor,
+          balance: order.totalPrice - order.tax,
+          date: indianDate.toDate(),
+          widthdrawals: false,
+        });
+      }
       if (!updatedOrder) {
         // Handle the case where the order could not be updated
         return res.status(500).json({
@@ -102,7 +146,6 @@ exports.paymentverification = async (req, res) => {
           message: "Failed to update order status",
         });
       }
-
       // Redirect to the success page
       res.redirect(
         `${process.env.DOMAIN}/success?razorpay_order_id=${razorpay_order_id}&razorpay_payment_id=${razorpay_payment_id}&razorpay_signature=${razorpay_signature}`

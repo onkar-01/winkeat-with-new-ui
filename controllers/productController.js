@@ -85,7 +85,7 @@ exports.getProductsByVendor = catchAsyncErrors(async (req, res, next) => {
 
   const productCount = await Product.countDocuments({ user: vendorId });
 
-  const apifeature = ApiFeatures(
+  const apifeature =  new ApiFeatures(
     Product.find({ user: vendorId }).populate("user", "name email"),
     req.query
   )

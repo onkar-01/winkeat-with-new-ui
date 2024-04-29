@@ -18,6 +18,7 @@ const {
   deleteUserByAdmin,
   getAllVendors,
   verifyEmail,
+  updateProfileImage,
 } = require("../controllers/userController");
 const {
   isAuthenticatedUser,
@@ -35,7 +36,7 @@ router.route("/password/reset").put(resetPassword);
 router.route("/me").get(isAuthenticatedUser, getUserDetails);
 router.route("/password/update").put(isAuthenticatedUser, updatePassword);
 router.route("/me/update").put(isAuthenticatedUser, updateProfile);
-
+router.route("/me/image-upload").put(isAuthenticatedUser, singleUpload,updateProfileImage);
 // Admin Routes
 
 router

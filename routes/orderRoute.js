@@ -13,6 +13,8 @@ const {
   getAllOrdersByVendor,
   getActiveOrdersByUser,
   getPreviousOrdersByUser,
+  getEarning,
+  totalSales,
 } = require("../controllers/orderController");
 const router = express.Router();
 
@@ -44,15 +46,20 @@ router
     isAuthenticatedRoles("vendor"),
     getPreviousOrdersByVendor
   );
-router
-  .route("/orders/all")
-  .get(
-    isAuthenticatedUser,
-    // isAuthenticatedRoles("vendor"),
-    getAllOrdersByVendor
-  );
+router.route("/orders/all").get(
+  isAuthenticatedUser,
+  // isAuthenticatedRoles("vendor"),
+  getAllOrdersByVendor
+);
 router
   .route("/orders/update-order-status")
   .post(isAuthenticatedUser, isAuthenticatedRoles("vendor"), updateOrderStatus);
+
+router
+  .route("/earning")
+  .get(isAuthenticatedUser, isAuthenticatedRoles("vendor"), getEarning);
+router
+  .route("/total-sales")
+  .get(isAuthenticatedUser, isAuthenticatedRoles("vendor"), totalSales);
 
 module.exports = router;

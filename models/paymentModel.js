@@ -7,7 +7,6 @@ const PaymentSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-
     razorpay_order_id: {
       type: String,
       required: true,
