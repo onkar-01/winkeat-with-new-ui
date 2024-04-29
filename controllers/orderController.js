@@ -8,6 +8,8 @@ const ApiFeatures = require("../utils/apifeatures");
 const moment = require('moment-timezone');
 const User = require("../models/userModel");
 const ShortUniqueId = require('short-unique-id');
+const Notification = require("../models/notificationModel");
+const { sendEmail, sendProductStatusUpdateEmail } = require("../utils/mailer");
 
 
 
@@ -350,6 +352,7 @@ exports.getActiveOrdersByVendor = catchAsyncErrors(async (req, res, next) => {
       if (productStatus !== "delivered" && productStatus !== "rejected") {
         orderItemsList.push({
           id:order._id,
+          itemOrderId: id,
           itemId,
           order_id: order.order_id,
           itemName,
@@ -418,6 +421,7 @@ exports.getPreviousOrdersByVendor = catchAsyncErrors(async (req, res, next) => {
       if (productStatus === "delivered" || productStatus === "rejected") {
         orderItemsList.push({
           id : order._id,
+          itemOrderId: id,
           itemId,
           order_id: order.order_id,
           itemName,
@@ -494,6 +498,7 @@ exports.getAllOrdersByVendor = catchAsyncErrors(async (req, res, next) => {
       } = element;
       orderItemsList.push({
         id : order._id,
+        itemOrderId: id,
         itemId,
         order_id: order.order_id,
         itemName,
@@ -523,7 +528,6 @@ exports.getAllOrdersByVendor = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-
 exports.updateOrderStatus = catchAsyncErrors(async (req, res, next) => {
   const { orderStatus } = req.body;
 
@@ -531,7 +535,13 @@ exports.updateOrderStatus = catchAsyncErrors(async (req, res, next) => {
     { "orderItems._id": req.body.orderItemId },
     { $set: { "orderItems.$.status": orderStatus } },
     { new: true }
-  );
+  ).populate("user", "email");
+
+  if (order) {
+    const orderItem = order.orderItems.find((item) => item._id.toString() === req.body.orderItemId);
+    const orderItemIdsString = orderItem.name;
+    await sendProductStatusUpdateEmail({ email:order.user.email , product: orderItem, orderId : order.order_id });
+  }
 
   if (!order) {
     return res.status(404).json({

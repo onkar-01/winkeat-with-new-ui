@@ -54,3 +54,29 @@ exports.sendEmail = async ({ email, emailType, userId }) => {
     throw new Error(error.message);
   }
 };
+
+
+exports.sendProductStatusUpdateEmail = async ({ email, product,orderId }) => {
+  try {
+    const transporter = nodeMailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      auth: {
+        user: process.env.SMTP_EMAIL,
+        pass: process.env.SMTP_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.SMTP_EMAIL,
+      to: email,
+      subject: `Product status updated: ${product.name}`,
+      html: `<p>The status of the product <strong>${product.name}</strong> of order id <strong>${orderId}</strong> has been updated to <strong>${product.status}</strong>.</p>`,
+    };
+
+    const mailresponse = await transporter.sendMail(mailOptions);
+    return mailresponse;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
