@@ -2,7 +2,7 @@ const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const User = require("../models/userModel");
 const sendToken = require("../utils/jwttoken");
 const ErrorHander = require("../utils/errorhander");
-const { sendEmail } = require("../utils/mailer");
+const { sendEmail , sendContactFormEmail } = require("../utils/mailer");
 const crypto = require("crypto");
 const { isAsyncFunction } = require("util/types");
 const { getDataUri } = require("../utils/datauri");
@@ -359,4 +359,30 @@ exports.updateProfileImage = catchAsyncErrors(async (req, res, next) => {
     success: true,
     user
   });
+});
+
+
+
+exports.contactUs = catchAsyncErrors(async (req, res, next) => {
+  const { name, email, subject, message } = req.body;
+  console.log(req.body);
+  if (!name || !email || !subject || !message) {
+    return next(new ErrorHander("Please fill all the required fields", 400));
+  }
+
+  try {
+    const mailresponse = await sendContactFormEmail({
+      name: req.body.name,
+      email: req.body.email,
+      subject: req.body.subject,
+      message: req.body.message,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Email sent successfully",
+    });
+  } catch (error) {
+    return next(new ErrorHander(error.message, 500));
+  }
 });

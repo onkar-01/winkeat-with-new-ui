@@ -80,3 +80,31 @@ exports.sendProductStatusUpdateEmail = async ({ email, product,orderId }) => {
     throw new Error(error.message);
   }
 };
+
+exports.sendContactFormEmail = async ({ name, email, subject, message }) => {
+  try {
+    const transporter = nodeMailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      auth: {
+        user: process.env.SMTP_EMAIL,
+        pass: process.env.SMTP_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.SMTP_EMAIL,
+      to: process.env.SMTP_EMAIL,
+      subject: `New contact form submission: ${subject}`,
+      html: `<p>Name: ${name}</p>
+             <p>Email: ${email}</p>
+             <p>Subject: ${subject}</p>
+             <p>Message: ${message}</p>`,
+    };
+
+    const mailresponse = await transporter.sendMail(mailOptions);
+    return mailresponse;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};

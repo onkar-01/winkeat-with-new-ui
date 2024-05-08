@@ -19,6 +19,7 @@ const {
   getAllVendors,
   verifyEmail,
   updateProfileImage,
+  contactUs,
 } = require("../controllers/userController");
 const {
   isAuthenticatedUser,
@@ -37,6 +38,7 @@ router.route("/me").get(isAuthenticatedUser, getUserDetails);
 router.route("/password/update").put(isAuthenticatedUser, updatePassword);
 router.route("/me/update").put(isAuthenticatedUser, updateProfile);
 router.route("/me/image-upload").put(isAuthenticatedUser, singleUpload,updateProfileImage);
+router.route("/contact-us").post(contactUs);
 // Admin Routes
 
 router
