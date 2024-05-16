@@ -639,6 +639,14 @@ exports.totalSales = catchAsyncErrors(async (req, res, next) => {
       } else if (totalEarnings < previousEarnings) {
         earningsChangePercentage = -((previousEarnings - totalEarnings) / previousEarnings) * 100;
       }
+
+      if (!isFinite(salesChangePercentage)) {
+        salesChangePercentage = 0;
+    }
+    
+    if (!isFinite(earningsChangePercentage)) {
+        earningsChangePercentage = 0;
+    }
     // }
     let walletWithdrawels = false;
     const walletWithdrawles = await Wallet.findOne({ user: req.user.id,
