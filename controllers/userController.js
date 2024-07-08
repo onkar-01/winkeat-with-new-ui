@@ -100,10 +100,15 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
 
   const user = await User.findOne({ email }).select("+password");
 
+  
+
   if (!user) {
     return next(new ErrorHander("Invalid email or password", 401));
   }
-
+  
+  if(!user.isVerfied){
+    return next(new ErrorHander("Please verify your email", 400));
+  }
   // check if password is correct or not
 
   const isPasswordMatched = await user.comparePassword(password);
